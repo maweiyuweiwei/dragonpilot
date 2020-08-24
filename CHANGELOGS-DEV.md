@@ -1,3 +1,12 @@
+dragonpilot 0.7.8.0
+========================
+* 基於最新 openpilot 0.7.8 devel.
+* Based on latest openpilot 0.7.8 devel.
+* 加入重置 DP 設定按鈕。(感謝 @LOVEChen 建議)
+* Added "Reset DP Settings" button. (Thanks to @LOVEChen)
+* 將警示訊息更改為類似於概念 UI 的設計。
+* Alert messages changed to concept UI alike design.
+
 dragonpilot 0.7.7.3
 ========================
 * 修正方向盤監控。

@@ -7,7 +7,7 @@ from datetime import datetime
 import traceback
 from selfdrive.version import version, dirty, origin, branch
 from common.params import Params
-uniqueID = Params().get('DongleId', None)
+import requests
 CRASHES_DIR = '/sdcard/crash_logs/'
 
 from selfdrive.swaglog import cloudlog
@@ -33,7 +33,11 @@ else:
     dongle_id = params.get("DongleId").decode('utf8')
   except AttributeError:
     dongle_id = "None"
-  error_tags = {'dirty': dirty, 'username': uniqueID, 'dongle_id': dongle_id, 'branch': branch, 'remote': origin}
+  try:
+    ip = requests.get('https://checkip.amazonaws.com/').text.strip()
+  except:
+    ip = "255.255.255.255"
+  error_tags = {'dirty': dirty, 'username': dongle_id, 'dongle_id': dongle_id, 'branch': branch, 'remote': origin}
 
 
   # client = Client('https://fa39b8804ae94ea6bbb22279d68b3dc7:5ac1b337f7be42308cabbb534b342669@sentry.io/1428745',
@@ -62,11 +66,11 @@ else:
     client.user_context(kwargs)
 
   def capture_warning(warning_string):
-    bind_user(id=dongle_id)
+    bind_user(id=dongle_id, ip_address=ip)
     client.captureMessage(warning_string, level='warning')
 
   def capture_info(info_string):
-    bind_user(id=dongle_id)
+    bind_user(id=dongle_id, ip_address=ip)
     client.captureMessage(info_string, level='info')
 
   def bind_extra(**kwargs):
