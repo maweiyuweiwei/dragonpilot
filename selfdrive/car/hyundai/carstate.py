@@ -124,9 +124,12 @@ class CarState(CarStateBase):
     else:
       ret = self.set_common_gear(ret, cp.vl["LVR12"]["CF_Lvr_Gear"])
 
-    aeb_fcw_msg = "FCA11" if self.CP.carFingerprint in FEATURES["use_fca"] else "SCC12"
-    ret.stockAeb = cp.vl[aeb_fcw_msg]['FCA_CmdAct'] != 0
-    ret.stockFcw = cp.vl[aeb_fcw_msg]['CF_VSM_Warn'] == 2
+    if self.CP.carFingerprint in FEATURES["use_fca"]:
+      ret.stockAeb = cp.vl["FCA11"]['FCA_CmdAct'] != 0
+      ret.stockFcw = cp.vl["FCA11"]['CF_VSM_Warn'] == 2
+    else:
+      ret.stockAeb = cp.vl["SCC12"]['AEB_CmdAct'] != 0
+      ret.stockFcw = cp.vl["SCC12"]['CF_VSM_Warn'] == 2
 
     # Blind Spot Detection
     ret.leftBlindspot = cp.vl["LCA11"]["CF_Lca_IndLeft"] != 0
