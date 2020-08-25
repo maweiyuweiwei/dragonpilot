@@ -155,7 +155,6 @@ class Controls:
     # dp
     self.dp_lead_count = 0
     self.dp_camera_offset = CAMERA_OFFSET
-    self.dp_hkg = False
 
   def update_events(self, CS):
     """Compute carEvents from carState"""
@@ -311,7 +310,7 @@ class Controls:
 
     # if stock cruise is completely disabled, then we can use our own set speed logic
     if not self.CP.enableCruise:
-      self.v_cruise_kph = update_v_cruise(self.v_cruise_kph, CS.buttonEvents, self.enabled, self.is_metric)
+      self.v_cruise_kph = update_v_cruise(self.v_cruise_kph, CS.buttonEvents, self.enabled)
     elif self.CP.enableCruise and CS.cruiseState.enabled:
       self.v_cruise_kph = CS.cruiseState.speed * CV.MS_TO_KPH
 
@@ -440,12 +439,7 @@ class Controls:
     CC.actuators = actuators
 
     CC.cruiseControl.override = True
-    if self.sm.updated['dragonConf']:
-      self.dp_hkg = self.sm['dragonConf'].dpHkg
-    if self.dp_hkg:
-      CC.cruiseControl.cancel = self.CP.enableCruise and not self.enabled and CS.cruiseState.enabled
-    else:
-      CC.cruiseControl.cancel = not self.CP.enableCruise or (not self.enabled and CS.cruiseState.enabled)
+    CC.cruiseControl.cancel = not self.CP.enableCruise or (not self.enabled and CS.cruiseState.enabled)
 
     # Some override values for Honda
     # brake discount removes a sharp nonlinearity
