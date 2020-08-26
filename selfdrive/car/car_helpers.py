@@ -86,7 +86,9 @@ def only_toyota_left(candidate_cars):
 
 # **** for use live only ****
 def fingerprint(logcan, sendcan, has_relay):
-  fixed_fingerprint = os.environ.get('FINGERPRINT', "") or Params().get('dp_car_selected', encoding='utf8')
+  params = Params()
+  is_hkg = params.get('dp_hkg') == b'1'
+  fixed_fingerprint = os.environ.get('FINGERPRINT', "") or params.get('dp_car_selected', encoding='utf8')
   skip_fw_query = os.environ.get('SKIP_FW_QUERY', False)
 
   if has_relay and not fixed_fingerprint and not skip_fw_query:
@@ -117,7 +119,10 @@ def fingerprint(logcan, sendcan, has_relay):
   Params().put("CarVin", vin)
 
   finger = gen_empty_fingerprint()
-  candidate_cars = {i: all_known_cars() for i in [0, 1]}  # attempt fingerprint on both bus 0 and 1
+  if is_hkg:
+    candidate_cars = {i: all_known_cars() for i in [0]}  # attempt fingerprint on both bus 0
+  else:
+    candidate_cars = {i: all_known_cars() for i in [0, 1]}  # attempt fingerprint on both bus 0 and 1
   frame = 0
   frame_fingerprint = 10  # 0.1s
   car_fingerprint = None

@@ -419,6 +419,7 @@ struct CarParams {
   networkLocation @50 :NetworkLocation;  # Where Panda/C2 is integrated into the car's CAN network
   # dp - hkg
   mdpsBus @51: Int8;
+  sasBus @52: Int8;
 
   struct LateralParams {
     torqueBP @0 :List(Int32);
