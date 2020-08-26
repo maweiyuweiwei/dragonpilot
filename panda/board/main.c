@@ -148,7 +148,15 @@ void set_safety_mode(uint16_t mode, int16_t param) {
       set_intercept_relay(true);
       heartbeat_counter = 0U;
       if (board_has_obd()) {
+        #ifdef hkg
+        if (mode_copy == SAFETY_HYUNDAI_LEGACY || mode_copy == SAFETY_HYUNDAI) {
+          current_board->set_can_mode(CAN_MODE_OBD_CAN2);
+        } else {
+          current_board->set_can_mode(CAN_MODE_NORMAL);
+        }
+        #else
         current_board->set_can_mode(CAN_MODE_NORMAL);
+        #endif
       }
       can_silent = ALL_CAN_LIVE;
       break;
@@ -704,6 +712,11 @@ void TIM1_BRK_TIM9_IRQ_Handler(void) {
     if (heartbeat_counter >= (check_started() ? EON_HEARTBEAT_IGNITION_CNT_ON : EON_HEARTBEAT_IGNITION_CNT_OFF)) {
       puts("EON hasn't sent a heartbeat for 0x");
       puth(heartbeat_counter);
+      #ifdef hkg
+      if (current_safety_mode != SAFETY_ALLOUTPUT) {
+        set_safety_mode(SAFETY_ALLOUTPUT, 0U); // MDPS will hard if SAFETY_NOOUTPUT
+      }
+      #else
       puts(" seconds. Safety is set to SILENT mode.\n");
       if (current_safety_mode != SAFETY_SILENT) {
         set_safety_mode(SAFETY_SILENT, 0U);
@@ -711,6 +724,7 @@ void TIM1_BRK_TIM9_IRQ_Handler(void) {
       if (power_save_status != POWER_SAVE_STATUS_ENABLED) {
         set_power_save_state(POWER_SAVE_STATUS_ENABLED);
       }
+      #endif
 
       // Also disable IR when the heartbeat goes missing
       current_board->set_ir_power(0U);
@@ -816,8 +830,12 @@ int main(void) {
   TIM2->EGR = TIM_EGR_UG;
   // use TIM2->CNT to read
 
+  #ifdef hkg
+  set_safety_mode(SAFETY_ALLOUTPUT, 0); // MDPS will hard if SAFETY_NOOUTPUT
+  #else
   // init to SILENT and can silent
   set_safety_mode(SAFETY_SILENT, 0);
+  #endif
 
   // enable CAN TXs
   current_board->enable_can_transcievers(true);

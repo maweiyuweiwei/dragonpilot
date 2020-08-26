@@ -403,7 +403,16 @@ void can_rx(uint8_t can_number) {
       to_send.RDTR = to_push.RDTR;
       to_send.RDLR = to_push.RDLR;
       to_send.RDHR = to_push.RDHR;
+      #ifdef hkg
+      if (bus_fwd_num > 9) {
+        can_send(&to_send, (bus_fwd_num / 10), true);
+        can_send(&to_send, (bus_fwd_num % 10), true);
+      } else {
+        can_send(&to_send, bus_fwd_num, true);
+      }
+      #else
       can_send(&to_send, bus_fwd_num, true);
+      #endif
     }
 
     can_rx_errs += safety_rx_hook(&to_push) ? 0U : 1U;
