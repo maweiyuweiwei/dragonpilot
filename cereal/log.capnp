@@ -2142,6 +2142,7 @@ struct DragonConf {
   dpChargingAt @68 :UInt8;
   dpDischargingAt @69 :UInt8;
   dpIsUpdating @70 :Bool;
-  dpThermalStarted @71 :Bool;
-  dpThermalOverheat @72 :Bool;
+  dpHkg @71 :Bool;
+  dpThermalStarted @72 :Bool;
+  dpThermalOverheat @73 :Bool;
 }
