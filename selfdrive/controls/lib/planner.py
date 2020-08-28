@@ -181,26 +181,27 @@ class Planner():
     following = lead_1.status and lead_1.dRel < 45.0 and lead_1.vLeadK > v_ego and lead_1.aLeadK > 0.0
 
     # dp
-    self.dp_profile = sm['dragonConf'].dpAccelProfile
-    self.dp_slow_on_curve = sm['dragonConf'].dpSlowOnCurve
+    # self.dp_profile = sm['dragonConf'].dpAccelProfile
+    # self.dp_slow_on_curve = sm['dragonConf'].dpSlowOnCurve
 
     # dp - slow on curve from 0.7.6.1
-    if self.dp_slow_on_curve and len(sm['model'].path.poly):
-      path = list(sm['model'].path.poly)
-
-      # Curvature of polynomial https://en.wikipedia.org/wiki/Curvature#Curvature_of_the_graph_of_a_function
-      # y = a x^3 + b x^2 + c x + d, y' = 3 a x^2 + 2 b x + c, y'' = 6 a x + 2 b
-      # k = y'' / (1 + y'^2)^1.5
-      # TODO: compute max speed without using a list of points and without numpy
-      y_p = 3 * path[0] * self.path_x**2 + 2 * path[1] * self.path_x + path[2]
-      y_pp = 6 * path[0] * self.path_x + 2 * path[1]
-      curv = y_pp / (1. + y_p**2)**1.5
-
-      a_y_max = 2.975 - v_ego * 0.0375  # ~1.85 @ 75mph, ~2.6 @ 25mph
-      v_curvature = np.sqrt(a_y_max / np.clip(np.abs(curv), 1e-4, None))
-      model_speed = np.min(v_curvature)
-      model_speed = max(20.0 * CV.MPH_TO_MS, model_speed)  # Don't slow down below 20mph
-    else:
+    # if self.dp_slow_on_curve and len(sm['model'].path.poly):
+    #   path = list(sm['model'].path.poly)
+    #
+    #   # Curvature of polynomial https://en.wikipedia.org/wiki/Curvature#Curvature_of_the_graph_of_a_function
+    #   # y = a x^3 + b x^2 + c x + d, y' = 3 a x^2 + 2 b x + c, y'' = 6 a x + 2 b
+    #   # k = y'' / (1 + y'^2)^1.5
+    #   # TODO: compute max speed without using a list of points and without numpy
+    #   y_p = 3 * path[0] * self.path_x**2 + 2 * path[1] * self.path_x + path[2]
+    #   y_pp = 6 * path[0] * self.path_x + 2 * path[1]
+    #   curv = y_pp / (1. + y_p**2)**1.5
+    #
+    #   a_y_max = 2.975 - v_ego * 0.0375  # ~1.85 @ 75mph, ~2.6 @ 25mph
+    #   v_curvature = np.sqrt(a_y_max / np.clip(np.abs(curv), 1e-4, None))
+    #   model_speed = np.min(v_curvature)
+    #   model_speed = max(20.0 * CV.MPH_TO_MS, model_speed)  # Don't slow down below 20mph
+    # else:
+    if True:
       model_speed = MAX_SPEED
 
     # Calculate speed for normal cruise control

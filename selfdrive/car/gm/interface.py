@@ -120,13 +120,13 @@ class CarInterface(CarInterfaceBase):
     return ret
 
   # returns a car.CarState
-  def update(self, c, can_strings, dragonconf):
+  def update(self, c, can_strings):#, dragonconf):
     self.cp.update_strings(can_strings)
 
     ret = self.CS.update(self.cp)
     # dp
-    self.dragonconf = dragonconf
-    ret.cruiseState.enabled = common_interface_atl(ret, dragonconf.dpAtl)
+    # self.dragonconf = dragonconf
+    # ret.cruiseState.enabled = common_interface_atl(ret, dragonconf.dpAtl)
     ret.canValid = self.cp.can_valid
     ret.steeringRateLimited = self.CC.steer_rate_limited if self.CC is not None else False
 
@@ -195,7 +195,7 @@ class CarInterface(CarInterfaceBase):
     can_sends = self.CC.update(enabled, self.CS, self.frame,
                                c.actuators,
                                hud_v_cruise, c.hudControl.lanesVisible,
-                               c.hudControl.leadVisible, c.hudControl.visualAlert, self.dragonconf)
+                               c.hudControl.leadVisible, c.hudControl.visualAlert)#, self.dragonconf)
 
     self.frame += 1
     return can_sends

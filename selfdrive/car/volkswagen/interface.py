@@ -105,7 +105,7 @@ class CarInterface(CarInterfaceBase):
     return ret
 
   # returns a car.CarState
-  def update(self, c, can_strings, dragonconf):
+  def update(self, c, can_strings):#, dragonconf):
     buttonEvents = []
 
     # Process the most recent CAN message traffic, and check for validity
@@ -119,8 +119,8 @@ class CarInterface(CarInterfaceBase):
     ret.steeringRateLimited = self.CC.steer_rate_limited if self.CC is not None else False
 
     # dp
-    self.dragonconf = dragonconf
-    ret.cruiseState.enabled = common_interface_atl(ret, dragonconf.dpAtl)
+    # self.dragonconf = dragonconf
+    # ret.cruiseState.enabled = common_interface_atl(ret, dragonconf.dpAtl)
 
     ret.canValid = self.cp.can_valid and self.cp_cam.can_valid
     ret.steeringRateLimited = self.CC.steer_rate_limited if self.CC is not None else False

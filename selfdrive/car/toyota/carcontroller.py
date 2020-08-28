@@ -55,7 +55,7 @@ class CarController():
     self.blinker_end_frame = 0.
 
   def update(self, enabled, CS, frame, actuators, pcm_cancel_cmd, hud_alert,
-             left_line, right_line, lead, left_lane_depart, right_lane_depart, dragonconf):
+             left_line, right_line, lead, left_lane_depart, right_lane_depart):#, dragonconf):
 
     # *** compute control surfaces ***
 
@@ -94,24 +94,24 @@ class CarController():
       pcm_cancel_cmd = 1
 
     # on entering standstill, send standstill request
-    if not dragonconf.dpToyotaSng and CS.out.standstill and not self.last_standstill:
+    if CS.out.standstill and not self.last_standstill:
       self.standstill_req = True
     if CS.pcm_acc_status != 8:
       # pcm entered standstill or it's disabled
       self.standstill_req = False
 
     # dp
-    blinker_on = CS.out.leftBlinker or CS.out.rightBlinker
-    if not enabled:
-      self.blinker_end_frame = 0
-    if self.last_blinker_on and not blinker_on:
-      self.blinker_end_frame = frame + dragonconf.dpSignalOffDelay
-    apply_steer = common_controller_ctrl(enabled,
-                                         dragonconf.dpLatCtrl,
-                                         dragonconf.dpSteeringOnSignal,
-                                         blinker_on or frame < self.blinker_end_frame,
-                                         apply_steer)
-    self.last_blinker_on = blinker_on
+    # blinker_on = CS.out.leftBlinker or CS.out.rightBlinker
+    # if not enabled:
+    #   self.blinker_end_frame = 0
+    # if self.last_blinker_on and not blinker_on:
+    #   self.blinker_end_frame = frame + dragonconf.dpSignalOffDelay
+    # apply_steer = common_controller_ctrl(enabled,
+    #                                      dragonconf.dpLatCtrl,
+    #                                      dragonconf.dpSteeringOnSignal,
+    #                                      blinker_on or frame < self.blinker_end_frame,
+    #                                      apply_steer)
+    # self.last_blinker_on = blinker_on
 
     self.last_steer = apply_steer
     self.last_accel = apply_accel
@@ -138,7 +138,7 @@ class CarController():
       lead = lead or CS.out.vEgo < 12.    # at low speed we always assume the lead is present do ACC can be engaged
 
       # Lexus IS uses a different cancellation message
-      if not dragonconf.dpAtl:
+      if True:# not dragonconf.dpAtl:
         if pcm_cancel_cmd and CS.CP.carFingerprint == CAR.LEXUS_IS:
           can_sends.append(create_acc_cancel_command(self.packer))
         elif CS.CP.openpilotLongitudinalControl:
@@ -167,7 +167,7 @@ class CarController():
       send_ui = True
 
     # dp
-    if dragonconf.dpToyotaLdw:
+    if False:# dragonconf.dpToyotaLdw:
       dragon_left_lane_depart = left_lane_depart
       dragon_right_lane_depart = right_lane_depart
     else:

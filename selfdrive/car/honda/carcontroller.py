@@ -103,7 +103,8 @@ class CarController():
 
   def update(self, enabled, CS, frame, actuators, \
              pcm_speed, pcm_override, pcm_cancel_cmd, pcm_accel, \
-             hud_v_cruise, hud_show_lanes, dragonconf, hud_show_car, hud_alert):
+             hud_v_cruise, hud_show_lanes, hud_show_car, hud_alert):
+             #hud_v_cruise, hud_show_lanes, dragonconf, hud_show_car, hud_alert):
 
     P = self.params
 
@@ -150,17 +151,17 @@ class CarController():
     can_sends = []
 
     # dp
-    blinker_on = CS.out.leftBlinker or CS.out.rightBlinker
-    if not enabled:
-      self.blinker_end_frame = 0
-    if self.last_blinker_on and not blinker_on:
-      self.blinker_end_frame = frame + dragonconf.dpSignalOffDelay
-    apply_steer = common_controller_ctrl(enabled,
-                                         dragonconf.dpLatCtrl,
-                                         dragonconf.dpSteeringOnSignal,
-                                         blinker_on or frame < self.blinker_end_frame,
-                                         apply_steer)
-    self.last_blinker_on = blinker_on
+    # blinker_on = CS.out.leftBlinker or CS.out.rightBlinker
+    # if not enabled:
+    #   self.blinker_end_frame = 0
+    # if self.last_blinker_on and not blinker_on:
+    #   self.blinker_end_frame = frame + dragonconf.dpSignalOffDelay
+    # apply_steer = common_controller_ctrl(enabled,
+    #                                      dragonconf.dpLatCtrl,
+    #                                      dragonconf.dpSteeringOnSignal,
+    #                                      blinker_on or frame < self.blinker_end_frame,
+    #                                      apply_steer)
+    # self.last_blinker_on = blinker_on
 
     # Send steering command.
     idx = frame % 4
@@ -176,12 +177,12 @@ class CarController():
       if (frame % 2) == 0:
         idx = frame // 2
         can_sends.append(hondacan.create_bosch_supplemental_1(self.packer, CS.CP.carFingerprint, idx, CS.CP.isPandaBlack))
-      if dragonconf.dpAtl:
-        pass
+      # if dragonconf.dpAtl:
+      #   pass
       # If using stock ACC, spam cancel command to kill gas when OP disengages.
-      elif not dragonconf.dpAllowGas and pcm_cancel_cmd:
-        can_sends.append(hondacan.spam_buttons_command(self.packer, CruiseButtons.CANCEL, idx, CS.CP.carFingerprint, CS.CP.isPandaBlack))
-      elif CS.out.cruiseState.standstill:
+      # elif not dragonconf.dpAllowGas and pcm_cancel_cmd:
+      #   can_sends.append(hondacan.spam_buttons_command(self.packer, CruiseButtons.CANCEL, idx, CS.CP.carFingerprint, CS.CP.isPandaBlack))
+      if CS.out.cruiseState.standstill:
         can_sends.append(hondacan.spam_buttons_command(self.packer, CruiseButtons.RES_ACCEL, idx, CS.CP.carFingerprint, CS.CP.isPandaBlack))
 
     else:

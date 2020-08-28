@@ -69,17 +69,17 @@ class CarController():
       self.lkas_max_torque = 0
 
     # dp
-    blinker_on = CS.out.leftBlinker or CS.out.rightBlinker
-    if not enabled:
-      self.blinker_end_frame = 0
-    if self.last_blinker_on and not blinker_on:
-      self.blinker_end_frame = frame + dragonconf.dpSignalOffDelay
-    apply_angle = common_controller_ctrl(enabled,
-                                         dragonconf.dpLatCtrl,
-                                         dragonconf.dpSteeringOnSignal,
-                                         blinker_on or frame < self.blinker_end_frame,
-                                         apply_angle)
-    self.last_blinker_on = blinker_on
+    # blinker_on = CS.out.leftBlinker or CS.out.rightBlinker
+    # if not enabled:
+    #   self.blinker_end_frame = 0
+    # if self.last_blinker_on and not blinker_on:
+    #   self.blinker_end_frame = frame + dragonconf.dpSignalOffDelay
+    # apply_angle = common_controller_ctrl(enabled,
+    #                                      dragonconf.dpLatCtrl,
+    #                                      dragonconf.dpSteeringOnSignal,
+    #                                      blinker_on or frame < self.blinker_end_frame,
+    #                                      apply_angle)
+    # self.last_blinker_on = blinker_on
 
     self.last_angle = apply_angle
 

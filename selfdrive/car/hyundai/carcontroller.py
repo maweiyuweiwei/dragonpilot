@@ -49,7 +49,7 @@ class CarController():
     self.blinker_end_frame = 0.
 
   def update(self, enabled, CS, frame, actuators, pcm_cancel_cmd, visual_alert,
-             left_lane, right_lane, left_lane_depart, right_lane_depart, dragonconf):
+             left_lane, right_lane, left_lane_depart, right_lane_depart):#, dragonconf):
     # Steering Torque
     new_steer = actuators.steer * SteerLimitParams.STEER_MAX
     apply_steer = apply_std_steer_torque_limits(new_steer, self.apply_steer_last, CS.out.steeringTorque, SteerLimitParams)
@@ -72,17 +72,17 @@ class CarController():
                         left_lane, right_lane, left_lane_depart, right_lane_depart)
 
     # dp
-    blinker_on = CS.out.leftBlinker or CS.out.rightBlinker
-    if not enabled:
-      self.blinker_end_frame = 0
-    if self.last_blinker_on and not blinker_on:
-      self.blinker_end_frame = frame + dragonconf.dpSignalOffDelay
-    apply_steer = common_controller_ctrl(enabled,
-                                         dragonconf.dpLatCtrl,
-                                         dragonconf.dpSteeringOnSignal,
-                                         blinker_on or frame < self.blinker_end_frame,
-                                         apply_steer)
-    self.last_blinker_on = blinker_on
+    # blinker_on = CS.out.leftBlinker or CS.out.rightBlinker
+    # if not enabled:
+    #   self.blinker_end_frame = 0
+    # if self.last_blinker_on and not blinker_on:
+    #   self.blinker_end_frame = frame + dragonconf.dpSignalOffDelay
+    # apply_steer = common_controller_ctrl(enabled,
+    #                                      dragonconf.dpLatCtrl,
+    #                                      dragonconf.dpSteeringOnSignal,
+    #                                      blinker_on or frame < self.blinker_end_frame,
+    #                                      apply_steer)
+    # self.last_blinker_on = blinker_on
 
     can_sends = []
     can_sends.append(create_lkas11(self.packer, frame, self.car_fingerprint, apply_steer, lkas_active,

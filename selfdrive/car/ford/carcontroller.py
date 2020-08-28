@@ -22,7 +22,7 @@ class CarController():
     self.last_blinker_on = False
     self.blinker_end_frame = 0.
 
-  def update(self, enabled, CS, frame, actuators, visual_alert, pcm_cancel, dragonconf):
+  def update(self, enabled, CS, frame, actuators, visual_alert, pcm_cancel):#, dragonconf):
 
     can_sends = []
     steer_alert = visual_alert == car.CarControl.HUDControl.VisualAlert.steerRequired
@@ -30,17 +30,17 @@ class CarController():
     apply_steer = actuators.steer
 
     # dp
-    blinker_on = CS.out.leftBlinker or CS.out.rightBlinker
-    if not enabled:
-      self.blinker_end_frame = 0
-    if self.last_blinker_on and not blinker_on:
-      self.blinker_end_frame = frame + dragonconf.dpSignalOffDelay
-    apply_steer = common_controller_ctrl(enabled,
-                                         dragonconf.dpLatCtrl,
-                                         dragonconf.dpSteeringOnSignal,
-                                         blinker_on or frame < self.blinker_end_frame,
-                                         apply_steer)
-    self.last_blinker_on = blinker_on
+    # blinker_on = CS.out.leftBlinker or CS.out.rightBlinker
+    # if not enabled:
+    #   self.blinker_end_frame = 0
+    # if self.last_blinker_on and not blinker_on:
+    #   self.blinker_end_frame = frame + dragonconf.dpSignalOffDelay
+    # apply_steer = common_controller_ctrl(enabled,
+    #                                      dragonconf.dpLatCtrl,
+    #                                      dragonconf.dpSteeringOnSignal,
+    #                                      blinker_on or frame < self.blinker_end_frame,
+    #                                      apply_steer)
+    # self.last_blinker_on = blinker_on
 
     if self.enable_camera:
 

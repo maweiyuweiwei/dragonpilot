@@ -106,7 +106,7 @@ class PathPlanner():
 
     # Lane change logic
     one_blinker = sm['carState'].leftBlinker != sm['carState'].rightBlinker
-    below_lane_change_speed = v_ego < (sm['dragonConf'].dpAssistedLcMinMph * CV.MPH_TO_MS)
+    below_lane_change_speed = v_ego < LANE_CHANGE_SPEED_MIN#(sm['dragonConf'].dpAssistedLcMinMph * CV.MPH_TO_MS)
 
     if sm['carState'].leftBlinker:
       self.lane_change_direction = LaneChangeDirection.left
@@ -128,31 +128,31 @@ class PathPlanner():
 
       # dp alc
       cur_time = sec_since_boot()
-      if not below_lane_change_speed and sm['dragonConf'].dpAutoLc and v_ego >= (sm['dragonConf'].dpAutoLcMinMph * CV.MPH_TO_MS):
-        # we allow auto lc when speed reached dragon_auto_lc_min_mph
-        self.dragon_auto_lc_allowed = True
-      else:
-        # if too slow, we reset all the variables
-        self.dragon_auto_lc_allowed = False
-        self.dragon_auto_lc_timer = None
+      # if not below_lane_change_speed and sm['dragonConf'].dpAutoLc and v_ego >= (sm['dragonConf'].dpAutoLcMinMph * CV.MPH_TO_MS):
+      #   # we allow auto lc when speed reached dragon_auto_lc_min_mph
+      #   self.dragon_auto_lc_allowed = True
+      # else:
+      #   # if too slow, we reset all the variables
+      #   self.dragon_auto_lc_allowed = False
+      #   self.dragon_auto_lc_timer = None
 
       # disable auto lc when continuous is off and already did auto lc once
-      if self.dragon_auto_lc_allowed and not sm['dragonConf'].dpAutoLcCont and self.dp_did_auto_lc:
-        self.dragon_auto_lc_allowed = False
+      # if self.dragon_auto_lc_allowed and not sm['dragonConf'].dpAutoLcCont and self.dp_did_auto_lc:
+      #   self.dragon_auto_lc_allowed = False
 
-      if self.dragon_auto_lc_allowed:
-        if self.dragon_auto_lc_timer is None:
-          # we only set timer when in preLaneChange state, dragon_auto_lc_delay delay
-          if self.lane_change_state == LaneChangeState.preLaneChange:
-            self.dragon_auto_lc_timer = cur_time + sm['dragonConf'].dpAutoLcDelay
-        elif cur_time >= self.dragon_auto_lc_timer:
-          # if timer is up, we set torque_applied to True to fake user input
-          torque_applied = True
-          self.dp_did_auto_lc = True
+      # if self.dragon_auto_lc_allowed:
+      #   if self.dragon_auto_lc_timer is None:
+      #     # we only set timer when in preLaneChange state, dragon_auto_lc_delay delay
+      #     if self.lane_change_state == LaneChangeState.preLaneChange:
+      #       # self.dragon_auto_lc_timer = cur_time + sm['dragonConf'].dpAutoLcDelay
+      #   elif cur_time >= self.dragon_auto_lc_timer:
+      #     # if timer is up, we set torque_applied to True to fake user input
+      #     torque_applied = True
+      #     self.dp_did_auto_lc = True
 
       # we reset the timers when torque is applied regardless
-      if torque_applied:
-        self.dragon_auto_lc_timer = None
+      # if torque_applied:
+        # self.dragon_auto_lc_timer = None
 
       # State transitions
       # off
@@ -260,7 +260,7 @@ class PathPlanner():
     plan_send.pathPlan.desire = desire
     plan_send.pathPlan.laneChangeState = self.lane_change_state
     plan_send.pathPlan.laneChangeDirection = self.lane_change_direction
-    plan_send.pathPlan.dpALCAllowed = self.dragon_auto_lc_allowed
+    plan_send.pathPlan.dpALCAllowed = False#self.dragon_auto_lc_allowed
 
     pm.send('pathPlan', plan_send)
 

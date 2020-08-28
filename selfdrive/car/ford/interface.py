@@ -53,15 +53,15 @@ class CarInterface(CarInterfaceBase):
     return ret
 
   # returns a car.CarState
-  def update(self, c, can_strings, dragonconf):
+  def update(self, c, can_strings):#, dragonconf):
     # ******************* do can recv *******************
     self.cp.update_strings(can_strings)
 
     ret = self.CS.update(self.cp)
     # dp
-    self.dragonconf = dragonconf
-    ret.cruiseState.enabled = common_interface_atl(ret, dragonconf.dpAtl)
-    ret.canValid = self.cp.can_valid
+    # self.dragonconf = dragonconf
+    # ret.cruiseState.enabled = common_interface_atl(ret, dragonconf.dpAtl)
+    # ret.canValid = self.cp.can_valid
 
     # events
     events = self.create_common_events(ret)
@@ -79,7 +79,7 @@ class CarInterface(CarInterfaceBase):
   def apply(self, c):
 
     can_sends = self.CC.update(c.enabled, self.CS, self.frame, c.actuators,
-                               c.hudControl.visualAlert, c.cruiseControl.cancel, self.dragonconf)
+                               c.hudControl.visualAlert, c.cruiseControl.cancel)#, self.dragonconf)
 
     self.frame += 1
     return can_sends

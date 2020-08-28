@@ -92,8 +92,8 @@ class LanePlanner():
     # only offset left and right lane lines; offsetting p_poly does not make sense
     if sec_since_boot() - self.last_ts >= 5.:
       self.sm.update(0)
-      if self.sm.updated['dragonConf']:
-        self.dp_camera_offset = self.sm['dragonConf'].dpCameraOffset * 0.01
+      # if self.sm.updated['dragonConf']:
+      #   self.dp_camera_offset = self.sm['dragonConf'].dpCameraOffset * 0.01
       self.last_ts = sec_since_boot()
     self.l_poly[3] += self.dp_camera_offset
     self.r_poly[3] += self.dp_camera_offset

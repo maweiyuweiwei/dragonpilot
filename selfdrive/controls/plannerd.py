@@ -37,8 +37,8 @@ def plannerd_thread(sm=None, pm=None):
   sm['liveParameters'].steerRatio = CP.steerRatio
   sm['liveParameters'].stiffnessFactor = 1.0
 
-  sm['dragonConf'].dpSlowOnCurve = False
-  sm['dragonConf'].dpAccelProfile = 0
+  # sm['dragonConf'].dpSlowOnCurve = False
+  # sm['dragonConf'].dpAccelProfile = 0
 
   while True:
     sm.update()
