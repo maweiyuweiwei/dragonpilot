@@ -213,10 +213,10 @@ class Controls:
         self.events.add(EventName.laneChange)
 
     if self.can_rcv_error or (not CS.canValid and self.sm.frame > 5 / DT_CTRL):
-      if self.sm['dragonConf'].dpAtl:
-        self.events.add(EventName.pcmDisable)
-      else:
-        self.events.add(EventName.canError)
+      # if self.sm['dragonConf'].dpAtl:
+      #   self.events.add(EventName.pcmDisable)
+      # else:
+      self.events.add(EventName.canError)
     if self.mismatch_counter >= 200:
       self.events.add(EventName.controlsMismatch)
     if not self.sm.alive['plan'] and self.sm.alive['pathPlan']:
@@ -225,10 +225,10 @@ class Controls:
     elif not self.sm.all_alive_and_valid():
       self.events.add(EventName.commIssue)
     if not self.sm['pathPlan'].mpcSolutionValid:
-      if self.sm['dragonConf'].dpAtl:
-        self.events.add(EventName.steerTempUnavailable)
-      else:
-        self.events.add(EventName.plannerError)
+      # if self.sm['dragonConf'].dpAtl:
+      #   self.events.add(EventName.steerTempUnavailable)
+      # else:
+      self.events.add(EventName.plannerError)
     if not self.sm['liveLocationKalman'].inputsOK and os.getenv("NOSENSOR") is None:
       if self.sm.frame > 5 / DT_CTRL:  # Give locationd some time to receive all the inputs
         self.events.add(EventName.sensorDataInvalid)
@@ -256,29 +256,29 @@ class Controls:
       self.events.add(EventName.modeldLagging)
 
     # Only allow engagement with brake pressed when stopped behind another stopped car
-    if not self.sm['dragonConf'].dpAtl and CS.brakePressed and self.sm['plan'].vTargetFuture >= STARTING_TARGET_SPEED \
+    if CS.brakePressed and self.sm['plan'].vTargetFuture >= STARTING_TARGET_SPEED \
        and not self.CP.radarOffCan and CS.vEgo < 0.3:
       self.events.add(EventName.noTarget)
 
     # dp lead car moving alert
-    if self.sm['dragonConf'].dpLeadCarAlert:
-      if not self.CP.radarOffCan and self.sm['plan'].hasLead and CS.vEgo <= 0.01 and 0.3 >= abs(self.sm['plan'].vTarget) >= 0:
-        self.dp_lead_count += 1
-      else:
-        self.dp_lead_count = 0
-
-      if self.dp_lead_count >= 300 and abs(self.sm['plan'].vTargetFuture) >= 0.1:
-        self.events.add(EventName.leadCarMoving)
-
-      if CS.vEgo > 0. or CS.gearShifter in [car.CarState.GearShifter.reverse, car.CarState.GearShifter.park]:
-        self.dp_lead_count = 0
+    # if self.sm['dragonConf'].dpLeadCarAlert:
+    #   if not self.CP.radarOffCan and self.sm['plan'].hasLead and CS.vEgo <= 0.01 and 0.3 >= abs(self.sm['plan'].vTarget) >= 0:
+    #     self.dp_lead_count += 1
+    #   else:
+    #     self.dp_lead_count = 0
+    #
+    #   if self.dp_lead_count >= 300 and abs(self.sm['plan'].vTargetFuture) >= 0.1:
+    #     self.events.add(EventName.leadCarMoving)
+    #
+    #   if CS.vEgo > 0. or CS.gearShifter in [car.CarState.GearShifter.reverse, car.CarState.GearShifter.park]:
+    #     self.dp_lead_count = 0
 
   def data_sample(self):
     """Receive data from sockets and update carState"""
 
     # Update carState from CAN
     can_strs = messaging.drain_sock_raw(self.can_sock, wait_for_one=True)
-    CS = self.CI.update(self.CC, can_strs, self.sm['dragonConf'])
+    CS = self.CI.update(self.CC, can_strs)#, self.sm['dragonConf'])
 
     self.sm.update(0)
 
@@ -296,7 +296,7 @@ class Controls:
     if not self.enabled:
       self.mismatch_counter = 0
 
-    if not self.sm['dragonConf'].dpAtl and not self.sm['health'].controlsAllowed and self.enabled:
+    if not self.sm['health'].controlsAllowed and self.enabled:
       self.mismatch_counter += 1
 
     self.distance_traveled += CS.vEgo * DT_CTRL
@@ -419,7 +419,7 @@ class Controls:
       self.saturated_count = 0
 
     # Send a "steering required alert" if saturation count has reached the limit
-    if self.sm['dragonConf'].dpLatCtrl and self.sm['dragonConf'].dpSteeringLimitAlert:
+    if True:# self.sm['dragonConf'].dpLatCtrl and self.sm['dragonConf'].dpSteeringLimitAlert:
       if (lac_log.saturated and not CS.steeringPressed) or \
          (self.saturated_count > STEER_ANGLE_SATURATION_TIMEOUT):
         # Check if we deviated from the path
@@ -464,8 +464,8 @@ class Controls:
 
     meta = self.sm['model'].meta
     if len(meta.desirePrediction) and ldw_allowed:
-      if self.sm.updated['dragonConf']:
-        self.dp_camera_offset = self.sm['dragonConf'].dpCameraOffset * 0.01
+      # if self.sm.updated['dragonConf']:
+      #   self.dp_camera_offset = self.sm['dragonConf'].dpCameraOffset * 0.01
       l_lane_change_prob = meta.desirePrediction[Desire.laneChangeLeft - 1]
       r_lane_change_prob = meta.desirePrediction[Desire.laneChangeRight - 1]
       l_lane_close = left_lane_visible and (self.sm['pathPlan'].lPoly[3] < (1.08 - self.dp_camera_offset))

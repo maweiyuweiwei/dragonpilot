@@ -120,7 +120,7 @@ def dmonitoringd_thread(sm=None, pm=None):
       }
       pm.send('dMonitoringState', dat)
     diff = sec_since_boot() - start_time
-    if not sm['dragonConf'].dpDriverMonitor and diff < 0.1:
+    if diff < 0.1:
       time.sleep(0.1-diff)
 
 def main(sm=None, pm=None):

@@ -202,8 +202,8 @@ def thermald_thread():
 
   while 1:
     sm.update()
-    if sm.updated['dragonConf']:
-      dp_temp_monitor = sm['dragonConf'].dpTempMonitor
+    # if sm.updated['dragonConf']:
+    #   dp_temp_monitor = sm['dragonConf'].dpTempMonitor
     health = messaging.recv_sock(health_sock, wait=True)
     location = messaging.recv_sock(location_sock)
     location = location.gpsLocation if location else None

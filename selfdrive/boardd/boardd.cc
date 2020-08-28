@@ -304,17 +304,18 @@ void can_health_thread() {
   }
 
   // run at 2hz
+  no_ign_cnt_max = NO_IGNITION_CNT_MAX;
   while (!do_exit && panda->connected) {
     // dp
-    if (check_cnt % 60 == 0) {
-      sm.update();
-      if (sm.updated("dragonConf") && sm["dragonConf"].getDragonConf().getDpAutoShutdown()) {
-        no_ign_cnt_max = sm["dragonConf"].getDragonConf().getDpAutoShutdownIn() * 60 * 2 - 10;  // -5 seconds, turn off earlier than EON
-      } else {
-        no_ign_cnt_max = NO_IGNITION_CNT_MAX; // use stock value
-      }
-      check_cnt = 0;
-    }
+//    if (check_cnt % 60 == 0) {
+//      sm.update();
+//      if (sm.updated("dragonConf") && sm["dragonConf"].getDragonConf().getDpAutoShutdown()) {
+//        no_ign_cnt_max = sm["dragonConf"].getDragonConf().getDpAutoShutdownIn() * 60 * 2 - 10;  // -5 seconds, turn off earlier than EON
+//      } else {
+//        no_ign_cnt_max = NO_IGNITION_CNT_MAX; // use stock value
+//      }
+//      check_cnt = 0;
+//    }
     check_cnt++;
 
     capnp::MallocMessageBuilder msg;
