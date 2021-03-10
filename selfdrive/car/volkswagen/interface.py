@@ -53,7 +53,7 @@ class CarInterface(CarInterfaceBase):
       ret.safetyModel = car.CarParams.SafetyModel.volkswagen
 
       # Determine installed network location and trans type from fingerprint
-      ret.networkLocation = NWL.fwdCamera if 0x122 in fingerprint[0] else NWL.gateway
+      ret.networkLocation = NWL.gateway
       if 0xAD in fingerprint[0]:  # Getriebe_11
         ret.transmissionType = TRANS.automatic
       elif 0x187 in fingerprint[0]:  # EV_Gearshift
