@@ -3,7 +3,7 @@ dragonpilot 0.8.5-1
 * Based on openpilot 0.8.5 devel.
 * 基於 openpilot 0.8.5 devel.
 * Support 1+3t / C2 / Jetson Xavier NX. 
-* 不支持 1+3t / C2 / Jetson Xavier NX.
+* 支持 1+3t / C2 / Jetson Xavier NX.
 * No White/Grey Panda Support.
 * 不支持白灰熊.
 
