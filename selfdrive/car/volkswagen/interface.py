@@ -49,7 +49,7 @@ class CarInterface(CarInterfaceBase):
       if 0xfd in fingerprint[1]:  # ESP_21 present on bus 1, we're hooked up at the CAN gateway
         ret.networkLocation = NetworkLocation.gateway
       else:  # We're hooked up at the LKAS camera
-        ret.networkLocation = NetworkLocation.gateway
+        ret.networkLocation = NetworkLocation.fwdCamera
       cloudlog.info("Detected network location: %s", ret.networkLocation)
 
     # Global tuning defaults, can be overridden per-vehicle
