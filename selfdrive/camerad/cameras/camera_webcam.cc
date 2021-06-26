@@ -40,7 +40,6 @@ CameraInfo cameras_supported[CAMERA_ID_MAX] = {
   },
 };
 std::string gstreamer_pipeline(int sensor_id, int capture_width, int capture_height, int framerate, int flip_method, int display_width, int display_height) {
-//    return "nvarguscamerasrc sensor_mode=4 sensor-id=" + std::to_string(sensor_id) + " ! video/x-raw(memory:NVMM), width=3264, height=2464, framerate=(fraction)" + std::to_string(framerate) + "/1, format=(string)NV12 ! nvvidconv flip-method=2 ! video/x-raw, format=(string)BGRx ! videoconvert ! video/x-raw, format=(string)BGR ! videoscale ! video/x-raw,width=" + std::to_string(width) + ",height=" + std::to_string(height) + " ! appsink";
     return "nvarguscamerasrc sensor_mode=1 sensor-id=" + std::to_string(sensor_id) + " ! video/x-raw(memory:NVMM), width=(int)" + std::to_string(capture_width) + ", height=(int)" +
            std::to_string(capture_height) + ", format=(string)NV12, framerate=(fraction)" + std::to_string(framerate) +
            "/1 ! nvvidconv flip-method=" + std::to_string(flip_method) + " ! video/x-raw, width=(int)" + std::to_string(display_width) + ", height=(int)" +
@@ -94,67 +93,21 @@ static void road_camera_thread(CameraState *s) {
   set_thread_name("webcam_road_camera_thread");
 
   std::string pipeline = gstreamer_pipeline(
-        0,
-        1920,
-	1280,
-        s->fps,
-        2,
-        800,
-        600);
+    1,
+    1920,
+	  1280,
+    s->fps,
+    2,
+    800,
+    600);
 
   cv::VideoCapture cap_road(pipeline, cv::CAP_GSTREAMER); // road
-
-  std::cout << "Using pipeline: \n\t" << pipeline << "\n";
-
-//  cv::VideoCapture cap_road(ROAD_CAMERA_ID, cv::CAP_V4L2); // road
-  //cap_road.set(cv::CAP_PROP_FRAME_WIDTH, 853);
-  //cap_road.set(cv::CAP_PROP_FRAME_HEIGHT, 480);
-  //cap_road.set(cv::CAP_PROP_FPS, s->fps);
-  //cap_road.set(cv::CAP_PROP_AUTOFOCUS, 0); // off
-  //cap_road.set(cv::CAP_PROP_FOCUS, 0); // 0 - 255?
-  // cv::Rect roi_rear(160, 0, 960, 720);
 
   // transforms calculation see tools/webcam/warp_vis.py
   float ts[9] = {1.50330396, 0.0, -59.40969163,
                   0.0, 1.50330396, 76.20704846,
                   0.0, 0.0, 1.0};
-  // if camera upside down:
-  // float ts[9] = {-1.50330396, 0.0, 1223.4,
-  //                 0.0, -1.50330396, 797.8,
-  //                 0.0, 0.0, 1.0};
-
   run_camera(s, cap_road, ts);
-}
-
-void driver_camera_thread(CameraState *s) {
-   std::string pipeline = gstreamer_pipeline(
-        1,
-	1920,
-        1280,
-        s->fps,
-        2,
-        800,
-        600);
-
-  cv::VideoCapture cap_driver(pipeline, cv::CAP_GSTREAMER); // road
-
-  std::cout << "Using pipeline: \n\t" << pipeline << "\n";
-
- //cv::VideoCapture cap_driver(DRIVER_CAMERA_ID, cv::CAP_V4L2); // driver
-  //cap_driver.set(cv::CAP_PROP_FRAME_WIDTH, 853);
-  //cap_driver.set(cv::CAP_PROP_FRAME_HEIGHT, 480);
-  //cap_driver.set(cv::CAP_PROP_FPS, s->fps);
-  // cv::Rect roi_front(320, 0, 960, 720);
-
-  // transforms calculation see tools/webcam/warp_vis.py
-  float ts[9] = {1.42070485, 0.0, -30.16740088,
-                  0.0, 1.42070485, 91.030837,
-                  0.0, 0.0, 1.0};
-  // if camera upside down:
-  // float ts[9] = {-1.42070485, 0.0, 1182.2,
-  //                 0.0, -1.42070485, 773.0,
-  //                 0.0, 0.0, 1.0};
-  run_camera(s, cap_driver, ts);
 }
 
 }  // namespace
@@ -162,30 +115,18 @@ void driver_camera_thread(CameraState *s) {
 void cameras_init(VisionIpcServer *v, MultiCameraState *s, cl_device_id device_id, cl_context ctx) {
   camera_init(v, &s->road_cam, CAMERA_ID_IMX219, 20, device_id, ctx,
               VISION_STREAM_RGB_BACK, VISION_STREAM_YUV_BACK);
-  s->pm = new PubMaster({"roadCameraState", "driverCameraState", "thumbnail"});
+  s->pm = new PubMaster({"roadCameraState", /*"driverCameraState,"*/ "thumbnail"});
 }
 
 void camera_autoexposure(CameraState *s, float grey_frac) {}
 
 void cameras_open(MultiCameraState *s) {
-  // LOG("*** open driver camera ***");
-  camera_open(&s->driver_cam, false);
-  // LOG("*** open road camera ***");
   camera_open(&s->road_cam, true);
 }
 
 void cameras_close(MultiCameraState *s) {
   camera_close(&s->road_cam);
-  camera_close(&s->driver_cam);
   delete s->pm;
-}
-
-void process_driver_camera(MultiCameraState *s, CameraState *c, int cnt) {
-  MessageBuilder msg;
-  auto framed = msg.initEvent().initDriverCameraState();
-  framed.setFrameType(cereal::FrameData::FrameType::FRONT);
-  fill_frame_data(framed, c->buf.cur_frame_data);
-  s->pm->send("driverCameraState", msg);
 }
 
 void process_road_camera(MultiCameraState *s, CameraState *c, int cnt) {
@@ -201,11 +142,9 @@ void process_road_camera(MultiCameraState *s, CameraState *c, int cnt) {
 void cameras_run(MultiCameraState *s) {
   std::vector<std::thread> threads;
   threads.push_back(start_process_thread(s, &s->road_cam, process_road_camera));
-  threads.push_back(start_process_thread(s, &s->driver_cam, process_driver_camera));
 
   std::thread t_rear = std::thread(road_camera_thread, &s->road_cam);
   set_thread_name("webcam_thread");
-  driver_camera_thread(&s->driver_cam);
 
   t_rear.join();
 
