@@ -19,7 +19,6 @@
 
 // id of the video capturing device
 const int ROAD_CAMERA_ID = getenv("ROADCAM_ID") ? atoi(getenv("ROADCAM_ID")) : 1;
-const int DRIVER_CAMERA_ID = getenv("DRIVERCAM_ID") ? atoi(getenv("DRIVERCAM_ID")) : 2;
 /*
 #define FRAME_WIDTH  1164
 #define FRAME_HEIGHT 874
@@ -37,18 +36,10 @@ namespace {
 
 CameraInfo cameras_supported[CAMERA_ID_MAX] = {
   // road facing
-  [CAMERA_ID_LGC920] = {
+  [CAMERA_ID_IMX219] = {
       .frame_width = FRAME_WIDTH,
       .frame_height = FRAME_HEIGHT,
       .frame_stride = FRAME_WIDTH*3,
-      .bayer = false,
-      .bayer_flip = false,
-  },
-  // driver facing
-  [CAMERA_ID_LGC615] = {
-      .frame_width = FRAME_WIDTH_FRONT,
-      .frame_height = FRAME_HEIGHT_FRONT,
-      .frame_stride = FRAME_WIDTH_FRONT*3,
       .bayer = false,
       .bayer_flip = false,
   },
