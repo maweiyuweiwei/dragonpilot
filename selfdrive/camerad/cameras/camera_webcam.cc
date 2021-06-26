@@ -19,12 +19,7 @@
 
 // id of the video capturing device
 const int ROAD_CAMERA_ID = getenv("ROADCAM_ID") ? atoi(getenv("ROADCAM_ID")) : 1;
-/*
-#define FRAME_WIDTH  1164
-#define FRAME_HEIGHT 874
-#define FRAME_WIDTH_FRONT  1152
-#define FRAME_HEIGHT_FRONT 864
-*/
+
 #define FRAME_WIDTH  1164
 #define FRAME_HEIGHT 874
 #define FRAME_WIDTH_FRONT  1152
@@ -46,7 +41,7 @@ CameraInfo cameras_supported[CAMERA_ID_MAX] = {
 };
 std::string gstreamer_pipeline(int sensor_id, int capture_width, int capture_height, int framerate, int flip_method, int display_width, int display_height) {
 //    return "nvarguscamerasrc sensor_mode=4 sensor-id=" + std::to_string(sensor_id) + " ! video/x-raw(memory:NVMM), width=3264, height=2464, framerate=(fraction)" + std::to_string(framerate) + "/1, format=(string)NV12 ! nvvidconv flip-method=2 ! video/x-raw, format=(string)BGRx ! videoconvert ! video/x-raw, format=(string)BGR ! videoscale ! video/x-raw,width=" + std::to_string(width) + ",height=" + std::to_string(height) + " ! appsink";
-    return "nvarguscamerasrc sensor_mode=2 sensor-id=" + std::to_string(sensor_id) + " ! video/x-raw(memory:NVMM), width=(int)" + std::to_string(capture_width) + ", height=(int)" +
+    return "nvarguscamerasrc sensor_mode=1 sensor-id=" + std::to_string(sensor_id) + " ! video/x-raw(memory:NVMM), width=(int)" + std::to_string(capture_width) + ", height=(int)" +
            std::to_string(capture_height) + ", format=(string)NV12, framerate=(fraction)" + std::to_string(framerate) +
            "/1 ! nvvidconv flip-method=" + std::to_string(flip_method) + " ! video/x-raw, width=(int)" + std::to_string(display_width) + ", height=(int)" +
            std::to_string(display_height) + ", format=(string)BGRx ! videoconvert ! video/x-raw, format=(string)BGR ! appsink";
@@ -165,10 +160,8 @@ void driver_camera_thread(CameraState *s) {
 }  // namespace
 
 void cameras_init(VisionIpcServer *v, MultiCameraState *s, cl_device_id device_id, cl_context ctx) {
-  camera_init(v, &s->road_cam, CAMERA_ID_LGC920, 20, device_id, ctx,
+  camera_init(v, &s->road_cam, CAMERA_ID_IMX219, 20, device_id, ctx,
               VISION_STREAM_RGB_BACK, VISION_STREAM_YUV_BACK);
-  camera_init(v, &s->driver_cam, CAMERA_ID_LGC615, 10, device_id, ctx,
-              VISION_STREAM_RGB_FRONT, VISION_STREAM_YUV_FRONT);
   s->pm = new PubMaster({"roadCameraState", "driverCameraState", "thumbnail"});
 }
 
