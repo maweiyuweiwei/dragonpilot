@@ -119,8 +119,9 @@ else:
       "/usr/lib",
       "/usr/local/lib",
     ]
-    #cflags += ["-mcpu=native"]
-    #cxxflags += ["-mcpu=native"]
+    cflags = ["-DXNX", "-march=armv8.2-a"]
+    cxxflags = ["-DXNX", "-march=armv8.2-a"]
+    rpath += ["/usr/local/lib"]
     cpppath += [
       # "/home/dev/mambaforge/envs/op/include",
       # "/home/dev/mambaforge/envs/op/include/opencv4/"
@@ -153,7 +154,7 @@ else:
     ]
 
   rpath = [
-    #"phonelibs/snpe/x86_64-linux-clang",
+    "phonelibs/snpe/x86_64-linux-clang",
     "cereal",
     "selfdrive/common",
   ]
