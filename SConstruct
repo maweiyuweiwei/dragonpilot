@@ -121,7 +121,7 @@ else:
     ]
     cflags = ["-DXNX", "-march=armv8.2-a"]
     cxxflags = ["-DXNX", "-march=armv8.2-a"]
-    rpath += ["/usr/local/lib"]
+
     cpppath += [
       # "/home/dev/mambaforge/envs/op/include",
       # "/home/dev/mambaforge/envs/op/include/opencv4/"
