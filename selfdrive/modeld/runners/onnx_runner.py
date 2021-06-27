@@ -44,6 +44,11 @@ if __name__ == "__main__":
     options = ort.SessionOptions()
     options.graph_optimization_level = ort.GraphOptimizationLevel.ORT_DISABLE_ALL
     provider = 'OpenVINOExecutionProvider'
+  elif 'CUDAExecutionProvider' in ort.get_available_providers():
+    print("OnnxJit is using CUDA", file=sys.stderr)
+    options = ort.SessionOptions()
+    options.graph_optimization_level = ort.GraphOptimizationLevel.ORT_DISABLE_ALL
+    provider = 'CUDAExecutionProvider'
   else:
     print("OnnxJit is using CPU", file=sys.stderr)
     options = ort.SessionOptions()
@@ -52,7 +57,7 @@ if __name__ == "__main__":
     options.execution_mode = ort.ExecutionMode.ORT_SEQUENTIAL
     options.graph_optimization_level = ort.GraphOptimizationLevel.ORT_ENABLE_ALL
 
-    provider = 'CUDAExecutionProvider'
+    provider = 'CPUExecutionProvider'
 
   ort_session = ort.InferenceSession(sys.argv[1], options)
   ort_session.set_providers([provider], None)
