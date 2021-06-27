@@ -49,8 +49,8 @@ if platform.system() == "Darwin":
 
 if arch == "aarch64" and TICI:
   arch = "larch64"
-if platform.system() == "Linux" and arch == "aarch64":
-  arch = "linuxarm64"
+#if platform.system() == "Linux" and arch == "aarch64":
+arch = "linuxarm64"
 USE_WEBCAM = os.getenv("USE_WEBCAM") is not None
 QCOM_REPLAY = arch == "aarch64" and os.getenv("QCOM_REPLAY") is not None
 
