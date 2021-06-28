@@ -44,12 +44,7 @@ AddOption('--external-sconscript',
           help='add an external SConscript to the build')
 
 real_arch = arch = subprocess.check_output(["uname", "-m"], encoding='utf8').rstrip()
-if platform.system() == "Darwin":
-  arch = "Darwin"
 
-if arch == "aarch64" and TICI:
-  arch = "larch64"
-#if platform.system() == "Linux" and arch == "aarch64":
 arch = "linuxarm64"
 USE_WEBCAM = os.getenv("USE_WEBCAM") is not None
 QCOM_REPLAY = arch == "aarch64" and os.getenv("QCOM_REPLAY") is not None
@@ -60,12 +55,6 @@ lenv = {
 
 if arch == "aarch64" or arch == "larch64":
   lenv["LD_LIBRARY_PATH"] = '/data/data/com.termux/files/usr/lib'
-
-  if arch == "aarch64":
-    # android
-    lenv["ANDROID_DATA"] = os.environ['ANDROID_DATA']
-    lenv["ANDROID_ROOT"] = os.environ['ANDROID_ROOT']
-
   cpppath = [
     "#phonelibs/opencl/include",
   ]
@@ -78,36 +67,15 @@ if arch == "aarch64" or arch == "larch64":
     "#phonelibs/nanovg",
   ]
 
-  if arch == "larch64":
-    libpath += [
-      "#phonelibs/snpe/larch64",
-      "#phonelibs/libyuv/larch64/lib",
-      "/usr/lib/aarch64-linux-gnu"
-    ]
-    cpppath += [
-      "#selfdrive/camerad/include",
-    ]
-    cflags = ["-DQCOM2", "-mcpu=cortex-a57"]
-    cxxflags = ["-DQCOM2", "-mcpu=cortex-a57"]
-    rpath = ["/usr/local/lib"]
-  else:
-    libpath += [
-      "#phonelibs/snpe/aarch64",
-      "#phonelibs/libyuv/lib",
-      "/system/vendor/lib64"
-    ]
     cflags = ["-DQCOM", "-mcpu=cortex-a57"]
     cxxflags = ["-DQCOM", "-mcpu=cortex-a57"]
     rpath = []
 
-    if QCOM_REPLAY:
-      cflags += ["-DQCOM_REPLAY"]
-      cxxflags += ["-DQCOM_REPLAY"]
 else:
   cflags = []
   cxxflags = []
   cpppath = []
-
+  rpath = []
   # ubuntu arm64
   if arch == "linuxarm64":
     libpath = [
@@ -121,40 +89,8 @@ else:
     ]
     cflags = ["-DXNX", "-march=armv8.2-a"]
     cxxflags = ["-DXNX", "-march=armv8.2-a"]
-
-    cpppath += [
-      # "/home/dev/mambaforge/envs/op/include",
-      # "/home/dev/mambaforge/envs/op/include/opencv4/"
-    ]
-  elif arch == "Darwin":
-    yuv_dir = "mac" if real_arch != "arm64" else "mac_arm64"
-    libpath = [
-      f"#phonelibs/libyuv/{yuv_dir}/lib",
-      "/usr/local/lib",
-      "/opt/homebrew/lib",
-      "/usr/local/opt/openssl/lib",
-      "/opt/homebrew/opt/openssl/lib",
-      "/System/Library/Frameworks/OpenGL.framework/Libraries",
-    ]
-    cflags += ["-DGL_SILENCE_DEPRECATION"]
-    cxxflags += ["-DGL_SILENCE_DEPRECATION"]
-    cpppath += [
-      "/opt/homebrew/include",
-      "/usr/local/opt/openssl/include",
-      "/opt/homebrew/opt/openssl/include"
-    ]
-  else:
-    libpath = [
-      "#phonelibs/snpe/x86_64-linux-clang",
-      "#phonelibs/libyuv/x64/lib",
-      "#cereal",
-      "#selfdrive/common",
-      "/usr/lib",
-      "/usr/local/lib",
-    ]
-
+    rpath = ["/usr/local/lib"]
   rpath = [
-    "phonelibs/snpe/x86_64-linux-clang",
     "cereal",
     "selfdrive/common",
   ]
