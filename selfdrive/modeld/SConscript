@@ -25,7 +25,7 @@ thneed_src = [
   "thneed/serialize.cc",
   "runners/thneedmodel.cc",
 ]
-
+arch == "linuxarm64"
 if arch == "aarch64" or arch == "larch64":
   libs += ['gsl', 'CB']
   libs += ['gnustl_shared'] if arch == "aarch64" else ['pthread', 'dl']
