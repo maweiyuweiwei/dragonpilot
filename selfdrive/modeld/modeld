@@ -7,6 +7,6 @@ if [ -d /system ]; then
     fi
 else
     # PC
-    export LD_LIBRARY_PATH="$HOME/openpilot/phonelibs/snpe/x86_64-linux-clang:/openpilot/phonelibs/snpe/x86_64:$HOME/openpilot/phonelibs/snpe/x86_64:$LD_LIBRARY_PATH"
+    export LD_LIBRARY_PATH="/usr/lib/aarch64-linux-gnu:$LD_LIBRARY_PATH"
 fi
 exec ./_modeld

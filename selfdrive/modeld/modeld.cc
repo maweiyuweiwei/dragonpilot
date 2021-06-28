@@ -140,7 +140,7 @@ int main(int argc, char **argv) {
   } else if (Hardware::TICI()) {
     set_core_affinity(7);  
   } else if (Hardware::PC()) {
-    set_core_affinity(7);  
+    set_core_affinity(7);
   }
   bool wide_camera = Hardware::TICI() ? Params().getBool("EnableWideCamera") : false;
 

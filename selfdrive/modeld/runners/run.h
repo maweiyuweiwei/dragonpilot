@@ -11,6 +11,6 @@
 #include "onnxmodel.h"
 #define DefaultRunModel ONNXModel
 #else
-#define DefaultRunModel ONNXModel
+#define DefaultRunModel SNPEModel
 #endif
 #endif
