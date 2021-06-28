@@ -95,7 +95,7 @@ static void road_camera_thread(CameraState *s) {
   std::string pipeline = gstreamer_pipeline(
     1,
     1920,
-	  1280,
+	       1280,
     s->fps,
     2,
     800,
